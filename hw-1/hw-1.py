@@ -1,14 +1,15 @@
 import numpy as np
-import matplotlib.pyplot as plt
 import scipy.integrate
+import matplotlib.pyplot as plt
 
-## Problem 1
+# Problem 1
 
 dydt = lambda t, y: -3*y*np.sin(t)
 y0 = np.pi/np.sqrt(2)
 ytrue = lambda t: np.pi*np.exp(3*(np.cos(t) - 1))/np.sqrt(2)
 
-# a - Forward Euler
+## a - Forward Euler
+
 def forward_euler(f, t, y0):
 	dt = t[2] - t[1]
 	y = np.zeros(len(t))
@@ -35,7 +36,8 @@ fig, ax = plt.subplots()
 ax.loglog(dt_vals, err, 'k.', markersize=20, label='Forward Euler Error')
 ax.loglog(dt_vals, 2.8*dt_vals, 'k--', linewidth=2, label=r'O($\Delta t$) trend line')
 
-# b - Heun's method
+## b - Heun's method
+
 def heun(f, t, y0):
 	dt = t[2]-t[1]
 	y = np.zeros(len(t))
@@ -60,7 +62,8 @@ A6 = pfit2[0]
 ax.loglog(dt_vals, err2, 'bd', markersize=10, markerfacecolor='b', label="Heun's Error")
 ax.loglog(dt_vals, 0.75*dt_vals**2, 'b--', linewidth=2, label=r'O($\Delta t^2$) trend line')
 
-# c - Adams predictor-corrector method
+## c - Adams predictor-corrector method
+
 def adam(f, t, y0):
 	dt = t[2]-t[1]
 	y = np.zeros(len(t))
@@ -83,6 +86,8 @@ A8 = err.reshape(1, -1)
 
 pfit = np.polyfit(np.log(dt_vals), np.log(err), 1)
 A9 = pfit[0]
+
+### 2D Plot
 					
 ax.loglog(dt_vals, err, 'gs', markersize=10, markerfacecolor='g', \
 			label="Adam's Predictor-Corrector Error")
@@ -93,11 +98,12 @@ ax.set_xlabel(r'$\Delta t$')
 ax.set_ylabel(r'Global error at t=5: $|y_{true}(5) - y_N|$')
 ax.set_title('Global error trends for three methods')
 
-## Problem 2
+# Problem 2
 
 dydt = lambda t, y, eps: np.array([y[1], -eps*(y[0]**2 -1)*y[1] - y[0]])
 
-# a
+## a
+
 y0 = np.array([np.sqrt(3), 1])
 trange = np.arange(0, 32.5, 0.5)
 out1 = scipy.integrate.solve_ivp(lambda t,y: dydt(t, y, 0.1), [0, 32], y0, t_eval = trange)
@@ -106,7 +112,8 @@ out3 = scipy.integrate.solve_ivp(lambda t,y: dydt(t, y, 20), [0, 32], y0, t_eval
 
 A10 = np.array([out1.y[0], out2.y[0], out3.y[0]]).T
 
-# b
+## b
+
 y0 = np.array([2, np.pi**2])
 tolerances = np.logspace(-4, -10, 7)
 t1_diff = np.zeros(len(tolerances))
@@ -138,7 +145,7 @@ A11 = np.polyfit(np.log(t1_diff), np.log(tolerances), 1)[0]
 A12 = np.polyfit(np.log(t2_diff), np.log(tolerances), 1)[0]
 A13 = np.polyfit(np.log(t3_diff), np.log(tolerances), 1)[0]
 
-## Problem 3
+# Problem 3
 
 a1, a2, b, c, I = 0.05, 0.25, 0.1, 0.1, 0.1
 tvals = np.arange(0, 100+0.5, 0.5)

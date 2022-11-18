@@ -1,10 +1,10 @@
 import numpy as np
-import matplotlib.pyplot as plt
 import scipy.integrate
+import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
 from matplotlib import cm
 
-## Problem 1
+# Problem 1
 
 def rhsfunc1(t, y, eps):
     f1 = y[1]
@@ -56,7 +56,8 @@ A4 = eigenfunctions1[:, 3].reshape(-1, 1)
 A5 = eigenfunctions1[:, 4].reshape(-1, 1)
 A6 = eigenvalues1.reshape(1, -1)
 
-# 3D Plot
+## 3D Plot
+
 x = np.linspace(-4, 4, 81)
 t = np.linspace(0, 5, 100)
 
@@ -74,7 +75,7 @@ ax.set_ylabel('t')
 ax.set_zlabel(r'$\psi_2(x, t)$')
 plt.title(r'Time Evolution of Probability Density Function $\psi_2(x, t)$')
 
-## Problem 2
+# Problem 2
 
 xp = [-4, 4]
 x_evals = np.linspace(-4, 4, 81)
@@ -112,7 +113,7 @@ A10 = sol2[:, 3].reshape(-1, 1)
 A11 = sol2[:, 4].reshape(-1, 1)
 A12 = np.array([eigenvals[indices[0]], eigenvals[indices[1]], eigenvals[indices[2]], eigenvals[indices[3]], eigenvals[indices[4]]]).reshape(1, -1)
 
-## Problem 3
+# Problem 3
 
 def rhsfunc2(t, y, eps, gam):
     f1 = y[1]

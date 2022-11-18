@@ -51,6 +51,8 @@ y = np.array([3, 4, 5, 7, 12])
 z = np.polyfit(x, y, 1)
 A5 = z[0]
 
+## 2D Plot
+
 fig, ax = plt.subplots()
 ax.plot(x, y, "ko", linewidth=3, label="Data")
 xplotting = np.arange(0, 10, 0.1)
@@ -70,3 +72,4 @@ A6 = np.linalg.solve(A, b)
 # print("A4:", A4)
 # print("A5:", A5)
 # print("A6:", A6)
+# plt.show()
