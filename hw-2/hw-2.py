@@ -26,7 +26,7 @@ for mode in range(5):
     
     for i in range(1000):
         y0 = np.array([A, A*np.sqrt(4**2 - eps)])
-        sol = scipy.integrate.solve_ivp(lambda x,y: rhsfunc1(x, y, eps), xp, y0, t_eval = x_evals)
+        sol = scipy.integrate.solve_ivp(lambda x, y: rhsfunc1(x, y, eps), xp, y0, t_eval = x_evals)
 
         if (np.abs(sol.y[1, -1] + np.sqrt(4**2 - eps)*sol.y[0, -1])) < tol:
             eigenfunctions1[:, mode] = sol.y[0, :]
@@ -137,7 +137,7 @@ for i, gamma in enumerate([0.05, -0.05]):
         
         for j in range(1000):
             y0 = np.array([A, A*np.sqrt(3**2 - eps)])
-            sol = scipy.integrate.solve_ivp(lambda x,y: rhsfunc2(x, y, eps, gamma), xp, y0, t_eval = x_evals3)
+            sol = scipy.integrate.solve_ivp(lambda x, y: rhsfunc2(x, y, eps, gamma), xp, y0, t_eval = x_evals3)
             
             eig_norm3 = np.trapz(sol.y[0, :]**2, x = x_evals3)
             if ((np.abs(sol.y[1, -1] + np.sqrt(3**2 - eps)*sol.y[0, -1]) < tol) and (np.abs(eig_norm3 - 1) < tol)):
@@ -148,7 +148,7 @@ for i, gamma in enumerate([0.05, -0.05]):
                 A = A/np.sqrt(eig_norm3)
             
             y0 = np.array([A, A*np.sqrt(3**2 - eps)])
-            sol = scipy.integrate.solve_ivp(lambda x,y: rhsfunc2(x, y, eps, gamma), xp, y0, t_eval = x_evals3)
+            sol = scipy.integrate.solve_ivp(lambda x, y: rhsfunc2(x, y, eps, gamma), xp, y0, t_eval = x_evals3)
             
             eig_norm3 = np.trapz(sol.y[0, :]**2, x = x_evals3)
             if ((np.abs(sol.y[1, -1] + np.sqrt(3**2 - eps)*sol.y[0, -1]) < tol) and (np.abs(eig_norm3 - 1) < tol)):

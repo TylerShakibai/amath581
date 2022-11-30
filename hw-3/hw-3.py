@@ -91,7 +91,7 @@ Lower1 = np.tile(np.concatenate((np.ones(m-1), [0])), (m,))
 Lower2 = np.tile(np.concatenate(([1], np.zeros(m-1))), (m,))
 Upper1 = np.roll(Lower1, 1)
 Upper2 = np.roll(Lower2, m-1)
-matrix4 = scipy.sparse.spdiags([Lower2, -Lower1, Upper1, -Upper2], [-m+1, -1, 1, m-1], n, n, format='csc')/(2*(20/64))
+matrix4 = scipy.sparse.spdiags([Lower2, -Lower1, Upper1, -Upper2], [1-m, -1, 1, m-1], n, n, format='csc')/(2*(20/64))
 
 A6 = matrix4.todense()
 
