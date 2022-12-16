@@ -52,7 +52,6 @@ for k, dt in enumerate(dt_vals):
 	yh = heun(dydt, t, y0)
 	err2[k] = np.abs(yh[-1] - ytrue(5))
 
-					
 A4 = yh.reshape(-1, 1)
 A5 = err2.reshape(1, -1)
 
@@ -109,7 +108,6 @@ trange = np.arange(0, 32.5, 0.5)
 out1 = scipy.integrate.solve_ivp(lambda t,y: dydt(t, y, 0.1), [0, 32], y0, t_eval = trange)
 out2 = scipy.integrate.solve_ivp(lambda t,y: dydt(t, y, 1), [0, 32], y0, t_eval = trange)
 out3 = scipy.integrate.solve_ivp(lambda t,y: dydt(t, y, 20), [0, 32], y0, t_eval = trange)
-
 A10 = np.array([out1.y[0], out2.y[0], out3.y[0]]).T
 
 ## b
@@ -133,17 +131,17 @@ for iter, tol in enumerate(np.logspace(-4, -10, 7)):
 	t3 = out3.t
 	t3_diff[iter] = np.mean(np.diff(t3))
 
+A11 = np.polyfit(np.log(t1_diff), np.log(tolerances), 1)[0]
+A12 = np.polyfit(np.log(t2_diff), np.log(tolerances), 1)[0]
+A13 = np.polyfit(np.log(t3_diff), np.log(tolerances), 1)[0]
+
 plt.figure()
 plt.loglog(t1_diff, tolerances, 'ko')
 plt.loglog(t2_diff, tolerances, 'bd')
 plt.loglog(t3_diff, tolerances, 'gs')
 
 plt.figure()
-plt.plot(out1.t, out1.y[0,:] )
-
-A11 = np.polyfit(np.log(t1_diff), np.log(tolerances), 1)[0]
-A12 = np.polyfit(np.log(t2_diff), np.log(tolerances), 1)[0]
-A13 = np.polyfit(np.log(t3_diff), np.log(tolerances), 1)[0]
+plt.plot(out1.t, out1.y[0,:])
 
 # Problem 3
 
@@ -168,7 +166,6 @@ sol2 = scipy.integrate.solve_ivp(dydt, [tvals[0], tvals[-1]], y0, method='BDF', 
 sol3 = scipy.integrate.solve_ivp(dydt, [tvals[0], tvals[-1]], y0, method='BDF', args=[-0.1, 0.2], t_eval=tvals)
 sol4 = scipy.integrate.solve_ivp(dydt, [tvals[0], tvals[-1]], y0, method='BDF', args=[-0.3, 0.2], t_eval=tvals)
 sol5 = scipy.integrate.solve_ivp(dydt, [tvals[0], tvals[-1]], y0, method='BDF', args=[-0.5, 0.2], t_eval=tvals)
-
 A14 = (sol1.y[(0, 2, 1, 3), :]).T
 A15 = (sol2.y[(0, 2, 1, 3), :]).T
 A16 = (sol3.y[(0, 2, 1, 3), :]).T

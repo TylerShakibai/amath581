@@ -2,6 +2,7 @@ import numpy as np
 import scipy.integrate
 import scipy.sparse
 import scipy.optimize
+import matplotlib.pyplot as plt
 
 # Problem 1
 
@@ -19,7 +20,6 @@ A2 = g1(min_index1)
 n = 128
 e = np.ones(n)
 matrix1 = scipy.sparse.spdiags([16*e, -e, -e, 16*e, -30*e, 16*e, -e, -e, 16*e], [1-n, 2-n, -2, -1, 0, 1, 2, n-2, n-1], n, n, format='csc')/12
-
 A3 = matrix1.todense()
 A4 = 0
 
@@ -37,12 +37,10 @@ A5 = sol1[:, -1].reshape(-1, 1)
 
 g2 = lambda z: (1 + CFL*(np.cos(z) - 1))/(1 - CFL*(np.cos(z) - 1))
 min_index2 = scipy.optimize.fminbound(lambda z: -abs(g2(z)), -np.pi, np.pi)
-
 A6 = g2(min_index2)
 
 matrix2 = scipy.sparse.eye(128, format='csc') - (CFL/2)*scipy.sparse.spdiags([e, e, -2*e, e, e], [1-n, -1, 0, 1, n-1], n, n, format='csc')
 matrix3 = scipy.sparse.eye(128, format='csc') + (CFL/2)*scipy.sparse.spdiags([e, e, -2*e, e, e], [1-n, -1, 0, 1, n-1], n, n, format='csc')
-
 A7 = matrix2.todense()
 A8 = matrix3.todense()
 
@@ -71,7 +69,8 @@ A10 = sol3[:, -1].reshape(-1, 1)
 
 exact1 = np.loadtxt('hw-4\exact_128.csv').reshape(-1, 1)
 exact2 = np.loadtxt('hw-4\exact_256.csv').reshape(-1, 1)
-
+exact3 = np.loadtxt('hw-4\exact_512.csv').reshape(-1, 1)
+exact4 = np.loadtxt('hw-4\exact_1024.csv').reshape(-1, 1)
 A11 = np.linalg.norm(exact1 - A5)
 A12 = np.linalg.norm(exact1 - A9)
 
@@ -108,6 +107,67 @@ for i in range(int(2/dt)):
     sol2[:, i+1] = v1
 
 A14 = np.linalg.norm(exact2 - sol2[:, -1].reshape(-1, 1))
+
+## 2D Plot
+
+curr_norm1 = []
+curr_norm2 = []
+
+for i, exact in enumerate([exact1, exact2, exact3, exact4]):
+    x = np.linspace(-10, 10, 128*(2**i), endpoint=False)
+    dx = 20/(128*(2**i))
+    t = np.linspace(0, 2, 500*(4**i) + 1)
+    dt = (2/(500*(4**i)))
+
+    n = 128*(2**i)
+    e = np.ones(n)
+    matrix1 = scipy.sparse.spdiags([16*e, -e, -e, 16*e, -30*e, 16*e, -e, -e, 16*e], [1-n, 2-n, -2, -1, 0, 1, 2, n-2, n-1], n, n, format='csc')/12
+
+    sol1 = np.zeros((len(x), len(t)))
+    u0 = 10*np.cos(2*np.pi*x/10) + 30*np.cos(8*np.pi*x/10)
+    sol1[:, 0] = u0
+    for i in range(int(2/dt)):
+        u1 = u0 + CFL*(matrix1@u0)
+        u0 = u1
+        sol1[:, i+1] = u1
+
+    curr_norm1.append(np.linalg.norm(exact - sol1[:, -1].reshape(-1, 1)))
+
+    matrix2 = scipy.sparse.eye(n, format='csc') - (CFL/2)*scipy.sparse.spdiags([e, e, -2*e, e, e], [1-n, -1, 0, 1, n-1], n, n, format='csc')
+    matrix3 = scipy.sparse.eye(n, format='csc') + (CFL/2)*scipy.sparse.spdiags([e, e, -2*e, e, e], [1-n, -1, 0, 1, n-1], n, n, format='csc')
+
+    sol2 = np.zeros((len(x), len(t)))
+    v0 = 10*np.cos(2*np.pi*x/10) + 30*np.cos(8*np.pi*x/10)
+    sol2[:, 0] = v0
+    PLU = scipy.sparse.linalg.splu(matrix2)
+    for i in range(int(2/dt)):
+        v1 = PLU.solve(matrix3@v0)
+        v0 = v1
+        sol2[:, i+1] = v1
+
+    curr_norm2.append(np.linalg.norm(exact - sol2[:, -1].reshape(-1, 1)))
+
+fig, ax = plt.subplots()
+ax.set_title(r'Log-log Plot of Error Versus $\Delta$x')
+ax.set_xlabel('$\Delta$x')
+ax.set_ylabel('Error')
+deltaX = [20/(128*(2**0)), 20/(128*(2**1)), 20/(128*(2**2)), 20/(128*(2**3))]
+ax.loglog(deltaX[0], curr_norm1[0], 'o')
+ax.loglog(deltaX[1], curr_norm1[1], 'o')
+ax.loglog(deltaX[2], curr_norm1[2], 'o')
+ax.loglog(deltaX[3], curr_norm1[3], 'o')
+
+m1, b1 = np.polyfit(np.log(deltaX), np.log(curr_norm1), 1)
+ax.loglog(deltaX, np.exp(m1*np.log(deltaX) + b1), label='(1,4) method')
+
+ax.loglog(deltaX[0], curr_norm2[0], 'o')
+ax.loglog(deltaX[1], curr_norm2[1], 'o')
+ax.loglog(deltaX[2], curr_norm2[2], 'o')
+ax.loglog(deltaX[3], curr_norm2[3], 'o')
+
+m2, b2 = np.polyfit(np.log(deltaX), np.log(curr_norm2), 1)
+ax.loglog(deltaX, np.exp(m2*np.log(deltaX) + b2), label='Crank-Nicolson method')
+ax.legend()
 
 # print("A1:", A1)
 # print("A2:", A2)

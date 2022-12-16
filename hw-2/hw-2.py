@@ -1,7 +1,6 @@
 import numpy as np
 import scipy.integrate
 import matplotlib.pyplot as plt
-from mpl_toolkits import mplot3d
 from matplotlib import cm
 
 # Problem 1

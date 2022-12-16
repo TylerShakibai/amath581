@@ -3,6 +3,7 @@ import scipy.integrate
 import scipy.sparse
 import matplotlib.pyplot as plt
 import time
+from matplotlib import animation
 
 # Problem 1
 
@@ -14,7 +15,6 @@ b = np.ones((n))
 Bin = np.array([-b, b, -b, b])
 d = np.array([-1,1, n-1, 1-n])
 matrix1 = scipy.sparse.spdiags(Bin, d, n, n, format='csc')/(2*0.1)
-
 A1 = matrix1.todense()
 
 ## b
@@ -24,7 +24,6 @@ def advection1(t, u, A, c):
     return -c*(A@u)
 
 sol1 = scipy.integrate.solve_ivp(advection1, [0, 10], u0, t_eval = np.arange(0, 10 + 0.5, 0.5), args = (matrix1, -0.5))
-
 A2 = sol1.y
 
 ## c
@@ -37,7 +36,6 @@ def cFunc(t, x):
     return (1 + 2*np.sin(5*t) - np.heaviside(x - 4, 0))
 
 sol2 = scipy.integrate.solve_ivp(advection2, [0, 10], u0, t_eval = np.arange(0, 10 + 0.5, 0.5), args = (matrix1, cFunc, x_evals))
-
 A3 = sol2.y
 
 ## 3D Plot
@@ -74,14 +72,12 @@ Low2 = np.tile(np.concatenate(([1], np.zeros(m-1))), (m,))
 Up1 = np.roll(Low1, 1)
 Up2 = np.roll(Low2, m-1)
 matrix2 = scipy.sparse.spdiags([e1, e1, Low2, Low1, -4*e0, Up1, Up2, e1, e1], [-(n-m), -m, -m+1, -1, 0, 1, m-1, m, (n-m)], n, n, format='csc')/((20/64)**2)
-
 A4 = matrix2.todense()
 
 m = 64
 n = m**2
 e1 = np.ones(n)
 matrix3 = scipy.sparse.spdiags([e1, -e1, e1, -e1], [-(n-m), -m, m, (n-m)], n, n, format='csc')/(2*(20/64))
-
 A5 = matrix3.todense()
 
 m = 64
@@ -92,7 +88,6 @@ Lower2 = np.tile(np.concatenate(([1], np.zeros(m-1))), (m,))
 Upper1 = np.roll(Lower1, 1)
 Upper2 = np.roll(Lower2, m-1)
 matrix4 = scipy.sparse.spdiags([Lower2, -Lower1, Upper1, -Upper2], [1-m, -1, 1, m-1], n, n, format='csc')/(2*(20/64))
-
 A6 = matrix4.todense()
 
 ## b
@@ -113,7 +108,6 @@ start1 = time.time()
 sol3 = scipy.integrate.solve_ivp(omegaFunc1, [0, 4], w0_temp, t_eval = t_span)
 end1 = time.time()
 # print("Gaussian elimination computation time:", end1 - start1)
-
 A7 = sol3.y.T
 
 LU = scipy.sparse.linalg.splu(matrix2)
@@ -125,13 +119,40 @@ def omegaFunc2(t, omega):
 start2 = time.time()
 sol4 = scipy.integrate.solve_ivp(omegaFunc2, [0, 4], w0_temp, t_eval = t_span)
 end2 = time.time()
-# print("LU decomposition computation time:", end2 - start2)
-# print("Ratio between the methods:", (end1 - start1)/(end2 - start2))
 
 A8 = sol4.y.T
 A9 = np.zeros((9, 64, 64))
 for i in range(9):
     A9[i] = A8[i].reshape(64, 64)
+
+## Animation
+
+dt = 0.1
+t_span = np.arange(0, 4 + dt, dt)
+sol3 = scipy.integrate.solve_ivp(omegaFunc1, [0, 4], w0_temp, t_eval = t_span)
+
+f, axes = plt.subplots(3, 3, figsize=(9, 6))
+for ax, i in zip(axes.ravel(), range(len(t_span)+1)):
+    cp = ax.contourf(np.column_stack(sol3.y).reshape(-1, 64, 64)[i].T,cmap = 'viridis')
+    fig.colorbar(cp, ax = ax)
+    ax.set_title("t = " + str(t_span[i]))
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+plt.tight_layout()
+
+fig = plt.figure()
+ax = plt.axes(xlim=(-10, 10), ylim=(-10, 10), xlabel='x', ylabel='y')
+
+cont = plt.contourf(sol3.y.T.reshape(len(t_span), 64, 64)[0, :, :])
+plt.colorbar(label = 'vorticity')
+
+def animate(i):
+    cont = ax.contourf(Y, X, sol3.y.T.reshape(len(t_span), 64, 64)[i])
+    plt.title("Vorticity at time t = " + str(np.round(t_span[i], decimals=1)))
+    return cont
+
+anim = animation.FuncAnimation(fig, animate, frames=len(t_span))
+# anim.save('vortex_dynamics.gif', writer=animation.PillowWriter(fps=10))
 
 # print("A1:", A1)
 # print("A2:", A2)
