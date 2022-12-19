@@ -1,4 +1,5 @@
 import numpy as np
+
 def cheb(N):
     if N == 0:
         D = 0

@@ -42,11 +42,15 @@ for mode in range(5):
     eig_norm = np.trapz(eigenfunctions1[:, mode]**2, x = x_evals)
     eigenfunctions1[:, mode] = eigenfunctions1[:, mode]/np.sqrt(eig_norm)
     
-    plt.plot(sol.t, eigenfunctions1[:, mode], linewidth=2)
+    plt.plot(sol.t, eigenfunctions1[:, mode], linewidth=2, label='mode ' + str(mode + 1))
     plt.plot(sol.t, 0*sol.t, 'k')
 
     phi[:, mode] = eigenfunctions1[:, mode]
     eigenfunctions1[:, mode] = abs(eigenfunctions1[:, mode])
+
+plt.xlabel('x')
+plt.ylabel('$\psi(x, t)$')
+plt.legend()
 
 A1 = eigenfunctions1[:, 0].reshape(-1, 1)
 A2 = eigenfunctions1[:, 1].reshape(-1, 1)

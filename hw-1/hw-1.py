@@ -136,12 +136,17 @@ A12 = np.polyfit(np.log(t2_diff), np.log(tolerances), 1)[0]
 A13 = np.polyfit(np.log(t3_diff), np.log(tolerances), 1)[0]
 
 plt.figure()
-plt.loglog(t1_diff, tolerances, 'ko')
-plt.loglog(t2_diff, tolerances, 'bd')
-plt.loglog(t3_diff, tolerances, 'gs')
+plt.loglog(t1_diff, tolerances, 'ko', label='Runge-Kutta 4(5) Method')
+plt.loglog(t2_diff, tolerances, 'bd', label='Runge-Kutta 2(3) Method')
+plt.loglog(t3_diff, tolerances, 'gs', label='Backward Differentiation Formula')
+plt.xlabel('$\Delta t _{avg}$')
+plt.ylabel('tolerance')
+plt.legend()
 
 plt.figure()
 plt.plot(out1.t, out1.y[0,:])
+plt.xlabel('t')
+plt.ylabel('y(t)')
 
 # Problem 3
 
